@@ -3,11 +3,6 @@
     "Description": "InfraKit Demo - builds a new VPC with a Docker Swarm",
 
     "Parameters": {
-        "InfrakitConfigRoot" : {
-            "Type" : "String",
-            "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/swarm"
-        },
         "PreinstalledDockerAMI": {
             "Description": "Pick which AMI to use; yes for preinstalled Docker; no to install the latest from get.docker.com",
             "Type": "String",
@@ -41,12 +36,12 @@
         "InfrakitConfigRoot" : {
             "Type" : "String",
             "Description" : "Root URL of the bootscript",
-            "Default" : "https://chungers.github.io/examples/latest/swarm"
+            "Default" : "https://kencochrane.github.io/infrakit-examples/latest/swarm"
         },
         "MetadataExportTemplate" : {
             "Type" : "String",
             "Description" : "URL to configure the metadata plugin",
-            "Default" : "https://chungers.github.io/examples/latest/metadata/aws/export.ikt"
+            "Default" : "https://kencochrane.github.io/infrakit-examples/latest/metadata/aws/export.ikt"
         },
         "Infrakit" : {
             "Type" : "String",
@@ -251,6 +246,78 @@
             }
         },
 
+        "ExternalLoadBalancer": {
+              "DependsOn": [
+                  "AttachGateway",
+                  "ExternalLoadBalancerSG",
+                  "Subnet1",
+              ],
+              "Properties": {
+                  "ConnectionSettings": {
+                      "IdleTimeout": 600
+                  },
+                  "CrossZone": "true",
+                  "HealthCheck": {
+                      "HealthyThreshold": "2",
+                      "Interval": "10",
+                      "Target": "HTTP:44554/",
+                      "Timeout": "2",
+                      "UnhealthyThreshold": "4"
+                  },
+                  "Listeners": [
+                      {
+                          "InstancePort": "7",
+                          "LoadBalancerPort": "7",
+                          "Protocol": "TCP"
+                      }
+                  ],
+                  "SecurityGroups": [
+                      {
+                          "Ref": "ExternalLoadBalancerSG"
+                      }
+                  ],
+                  "Subnets": [
+                    {
+                      "Ref": "Subnet1"
+                    }
+                  ],
+                  "Tags": [
+                      {
+                          "Key": "Name",
+                          "Value": {
+                              "Fn::Join": [
+                                  "-",
+                                  [
+                                      {
+                                          "Ref": "AWS::StackName"
+                                      },
+                                      "ELB"
+                                  ]
+                              ]
+                          }
+                      }
+                  ]
+              },
+              "Type": "AWS::ElasticLoadBalancing::LoadBalancer"
+          },
+          "ExternalLoadBalancerSG": {
+              "DependsOn": "Vpc",
+              "Properties": {
+                  "GroupDescription": "External Load Balancer SecurityGroup",
+                  "SecurityGroupIngress": [
+                      {
+                          "CidrIp": "0.0.0.0/0",
+                          "FromPort": "0",
+                          "IpProtocol": "-1",
+                          "ToPort": "65535"
+                      }
+                  ],
+                  "VpcId": {
+                      "Ref": "Vpc"
+                  }
+              },
+              "Type": "AWS::EC2::SecurityGroup"
+          },
         "ProvisionerRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -410,6 +477,7 @@
                             "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
+                               " --var /cluster/elb=", {"Ref":"ExternalLoadBalancer"},
                                " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},
