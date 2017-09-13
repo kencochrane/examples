@@ -477,7 +477,7 @@
                             "docker run --rm ", {"Ref":"Infrakit"} ," infrakit template -f ",
                                {"Ref":"InfrakitConfigRoot"}, "/boot.sh",
                                " --var /cluster/name=", {"Ref":"AWS::StackName"},
-                               " --var /cluster/elb=", {"Ref":"ExternalLoadBalancer"},
+                               " --var /cluster/elb/name=", {"Ref":"ExternalLoadBalancer"},
                                " --var /cluster/swarm/size=", {"Ref":"ClusterSize"},
                                " --var /infrakit/config/root=", {"Ref":"InfrakitConfigRoot"},
                                " --var /infrakit/metadata/configURL=", {"Ref":"MetadataExportTemplate"},

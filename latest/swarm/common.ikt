@@ -12,12 +12,13 @@ if not available, we expect to come from command line or some other means -- see
 {{ if metadata "aws" }}
 {{ var "/cluster/name"                   ( metadata "aws/export/cfn/stack" )}}
 {{ var "/cluster/swarm/size"             ( metadata "aws/export/cfn/config/Parameters/ClusterSize/ParameterValue" )}}
-{{/* var "/cluster/elb"                    ( metadata "aws/export/cfn/config/Resources//ParameterValue" ) */}}
+{{ var "/cluster/elb"                    ( metadata "aws/export/cfn/config/Resources/ExternalLoadBalancer/PhysicalResourceId" ) }}
 {{ var "/infrakit/config/root"           ( metadata "aws/export/cfn/config/Parameters/InfrakitConfigRoot/ParameterValue" )}}
 {{ var "/infrakit/metadata/configURL"    ( metadata "aws/export/cfn/config/Parameters/MetadataExportTemplate/ParameterValue" )}}
 {{ var "/provider/image/hasDocker"       ( metadata "aws/export/cfn/config/Parameters/PreinstalledDockerAMI/ParameterValue" )}}
 {{ var "/infrakit/docker/image"          ( metadata "aws/export/cfn/config/Parameters/Infrakit/ParameterValue" )}}
 {{ end }}
 
+{{ var "/cluster/elb/name" (var "/cluster/elb/name") }}
 {{ var "/local/install/docker" (var "/provider/image/hasDocker" | default "no" | eq "no" ) }}
 {{ var "/local/docker/user" "ubuntu" }}
