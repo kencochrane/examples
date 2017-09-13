@@ -20,7 +20,7 @@ echo "ELB name = {{ var `/cluster/elb/name` }}"
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
-       -e INFRAKIT_AWS_ELB_NAME={{ var `/cluster/elb/name` }} \
+       -e INFRAKIT_AWS_ELB_NAMES={{ var `/cluster/elb/name` }} \
        -e INFRAKIT_AWS_METADATA_TEMPLATE_URL={{ var `/infrakit/metadata/configURL` }} \
        -e INFRAKIT_MANAGER_BACKEND=swarm \
        -e INFRAKIT_AWS_NAMESPACE_TAGS=infrakit.scope={{ var `/cluster/name` }} \
