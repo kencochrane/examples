@@ -12,8 +12,9 @@
         "ClusterSize": {
             "Description": "Size of the cluster",
             "Type": "Number",
-            "MinValue": "3",
+            "MinValue": "4",
             "MaxValue": "10"
+            "Default": "4",
         },
         "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",

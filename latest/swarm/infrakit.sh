@@ -16,7 +16,7 @@ alias infrakit='docker run --rm {{$dockerMounts}} {{$dockerEnvs}} {{$dockerImage
 
 {{ $groupsURL := cat (var `/infrakit/config/root`) `/groups.json` | nospace }}
 
-echo "ELB name = {{ var `/cluster/elb/name` }}"
+echo "ELB name = {{ var `/cluster/elb/name` }} Meta:{{ var `/cluster/elb` }}"
 echo "Starting up infrakit  ######################"
 docker run -d --restart always --name infrakit -p 24864:24864 {{ $dockerMounts }} {{ $dockerEnvs }} \
        -e INFRAKIT_AWS_STACKNAME={{ var `/cluster/name` }} \
